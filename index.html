@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Training">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Training</title>
+<style>
+:root{--bg:#0f1115;--card:#1a1d24;--card2:#232731;--line:#2e3340;--txt:#eef0f4;--mute:#9aa1b0;--acc:#4f9cff;--ok:#3ddc97;--core:#f5b942;--bad:#ff6b6b;--pr:#ffd34d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding:env(safe-area-inset-top) 0 0}
+main{padding:12px 14px 170px;max-width:640px;margin:0 auto}
+h1{font-size:22px;margin:6px 0 2px}h2{font-size:18px;margin:18px 0 8px}h3{font-size:16px;margin:0}
+.mute{color:var(--mute)}.small{font-size:13px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin:10px 0}
+.row{display:flex;gap:8px;align-items:center}.wrap{flex-wrap:wrap}.grow{flex:1}.between{justify-content:space-between}
+button,.btn{font:inherit;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:12px;min-height:52px;padding:0 14px;cursor:pointer}
+button:active{transform:scale(.97)}
+.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.okb{background:var(--ok);border-color:var(--ok);color:#06281a;font-weight:600}
+.full{width:100%}
+.seg{display:flex;gap:6px}.seg button{flex:1;min-height:48px;padding:0 6px;font-size:14px}
+.seg .on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{min-height:44px;font-size:14px}
+.chips .on{border-color:var(--acc);color:var(--acc);font-weight:600}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.tag.core{color:var(--core);border-color:var(--core)}.tag.opt{color:var(--mute)}
+.tag.pr{color:#1a1400;background:var(--pr);border-color:var(--pr);font-weight:700}
+.banner{border-radius:12px;padding:12px;margin:10px 0;background:#2a2412;border:1px solid #5c4a17}
+.banner.blue{background:#13233b;border-color:#24477a}.banner.red{background:#3a1717;border-color:#7a2a2a}
+.switch{display:flex;align-items:center;justify-content:space-between;min-height:52px}
+.tg{width:56px;height:32px;border-radius:99px;background:var(--line);position:relative;border:none;min-height:0;padding:0}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:.15s}
+.tg.on{background:var(--ok)}.tg.on::after{left:27px}
+.ex{border:1px solid transparent}.ex.focus{border-color:var(--acc)}.ex.done{opacity:.75}
+.exhead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.count{font-weight:700;font-size:18px;white-space:nowrap}
+.sets{margin:8px 0 0;padding:0;list-style:none}
+.sets li{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.sets li button{min-height:36px;padding:0 10px;font-size:13px}
+.stepper{display:flex;gap:6px;align-items:center;margin:8px 0}
+.stepper button{min-width:52px;padding:0}
+.stepper input{flex:1;min-width:0;text-align:center;font:600 24px system-ui;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:12px;height:56px}
+.lbl{font-size:12px;color:var(--mute);margin-top:6px}
+.rpe button{flex:1;min-width:0;padding:0}
+.sugg{color:var(--ok);font-weight:600;margin-top:6px}
+.rx{margin-top:8px;padding:8px 10px;border-radius:10px;background:#13233b}.warn{color:var(--core)}
+input[type=text],input[type=number],input[type=date],select,textarea{font:inherit;color:var(--txt);background:var(--bg);border:1px solid var(--line);border-radius:10px;min-height:46px;padding:0 10px;width:100%}
+textarea{padding:10px;min-height:70px}
+nav{position:fixed;left:0;right:0;bottom:0;background:#14171d;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:20}
+nav button{flex:1;border:none;background:none;border-radius:0;min-height:60px;font-size:13px;color:var(--mute)}
+nav button.on{color:var(--acc);font-weight:700}
+nav i{display:block;font-style:normal;font-size:20px}
+#timer{position:fixed;left:10px;right:10px;bottom:calc(68px + env(safe-area-inset-bottom));background:#13233b;border:1px solid var(--acc);border-radius:14px;padding:8px 10px;display:none;align-items:center;gap:8px;z-index:21}
+#timer.show{display:flex}#timer.end{background:#123b28;border-color:var(--ok)}
+#timer .t{font:700 30px ui-monospace,monospace;flex:1}
+#timer button{min-height:46px}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);background:var(--pr);color:#1a1400;font-weight:700;padding:10px 16px;border-radius:12px;display:none;z-index:40;max-width:90%}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:30;display:flex;align-items:flex-end}
+.sheet.hidden{display:none}
+.sheet-body{background:var(--card);width:100%;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+.grid{width:100%;border-collapse:separate;border-spacing:4px;font-size:13px}
+.grid th{color:var(--mute);font-weight:500}
+.grid td{text-align:center;border-radius:8px;height:44px;background:var(--card2)}
+.grid td.wk{background:none;text-align:left;white-space:nowrap}
+.st-Full{background:#174d36!important;color:var(--ok)}.st-Core{background:#4a3a12!important;color:var(--core)}
+.st-Missed{background:#4a1d1d!important;color:var(--bad)}.st-Today{outline:1px solid var(--acc)}
+.big{font-size:34px;font-weight:800}
+.list-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.list-item:first-child{border-top:none}
+.mini{min-height:40px;padding:0 10px;font-size:14px}
+label.f{display:block;margin:10px 0 4px;font-size:13px;color:var(--mute)}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="timer"><span class="mute small">Rest</span><span class="t" id="tt">0:00</span><button data-act="timerAdd">+30s</button><button data-act="timerStop">Skip</button></div>
+<div id="toast"></div>
+<div id="sheet" class="sheet hidden"><div class="sheet-body" id="sheetBody"></div></div>
+<nav id="nav"></nav>
+<script>
+"use strict";
+const SEED = [{"id": "p1", "day": "Sat", "session": "Top Shelf Heavy", "type": "Heavy", "exercise": "Standing barbell overhead press", "muscle": "Front delts", "sets": 4, "repMin": 4, "repMax": 6, "effort": "RPE 9, last set to failure (rack)", "rest": "2-3 min", "restSec": 120, "core": true, "baseline": "30 x 12 (28 Oct). Targets: 45 x 4 (Jul 2026), 75 x 8 (Oct 2025)", "notes": "Front delt trial runs here and on Mon", "order": 0}, {"id": "p2", "day": "Sat", "session": "Top Shelf Heavy", "type": "Heavy", "exercise": "Reverse-grip bench (barbell or Smith)", "muscle": "Chest", "sets": 3, "repMin": 6, "repMax": 8, "effort": "RPE 8-9", "rest": "2-3 min", "restSec": 120, "core": true, "baseline": "Not logged. Find an RPE 8 load", "notes": "Upper chest. Confirm the Smith suits it", "order": 1}, {"id": "p3", "day": "Sat", "session": "Top Shelf Heavy", "type": "Heavy", "exercise": "Plate-loaded seated chest press", "muscle": "Chest", "sets": 3, "repMin": 6, "repMax": 8, "effort": "Last set near failure", "rest": "2 min", "restSec": 120, "core": false, "baseline": "30 x 12 (28 Oct; per side or total unconfirmed)", "notes": "Across-chest variation works", "order": 2}, {"id": "p4", "day": "Sat", "session": "Top Shelf Heavy", "type": "Heavy", "exercise": "Cable lateral raise, raised pin, arm behind body", "muscle": "Mid delts", "sets": 3, "repMin": 8, "repMax": 12, "effort": "RPE 8-9", "rest": "60-90 s", "restSec": 60, "core": true, "baseline": "Ankle-strap raise 7.5 x 12 (Mar 2026)", "notes": "Scapular plane, grab cable behind body. Add weight at 15+ clean reps", "order": 3}, {"id": "p5", "day": "Sat", "session": "Top Shelf Heavy", "type": "Heavy", "exercise": "Barbell curl", "muscle": "Biceps", "sets": 3, "repMin": 5, "repMax": 8, "effort": "RPE 8-9", "rest": "2 min", "restSec": 120, "core": false, "baseline": "Not logged in 2026. Target 70 x 8 (Sep 2025)", "notes": "Heavy biceps", "order": 4}, {"id": "p6", "day": "Sat", "session": "Top Shelf Heavy", "type": "Heavy", "exercise": "Angled plate-loaded leg press", "muscle": "Quads", "sets": 4, "repMin": 6, "repMax": 8, "effort": "RPE 8-9", "rest": "2-3 min", "restSec": 120, "core": true, "baseline": "208.7 x 8 (Jul 2026, old gym). Not yet logged at Plus", "notes": "Log the plates loaded and note the machine", "order": 5}, {"id": "p7", "day": "Sun", "session": "Back Heavy", "type": "Heavy", "exercise": "Supinated barbell row (pull to hips)", "muscle": "Lats & upper back", "sets": 4, "repMin": 5, "repMax": 8, "effort": "RPE 8-9", "rest": "2-3 min", "restSec": 120, "core": true, "baseline": "65.35 x 8 (Jul); 30 x 12 (10 Oct)", "notes": "Lower lats", "order": 6}, {"id": "p8", "day": "Sun", "session": "Back Heavy", "type": "Heavy", "exercise": "Wide-grip pull-up", "muscle": "Lats & upper back", "sets": 3, "repMin": 5, "repMax": 8, "effort": "RPE 8-9", "rest": "2-3 min", "restSec": 120, "core": true, "baseline": "Bodyweight x 5 (26 Oct)", "notes": "Assisted machine if needed. Add load once 8 clean", "order": 7}, {"id": "p9", "day": "Sun", "session": "Back Heavy", "type": "Heavy", "exercise": "Wide-grip cable lat pulldown", "muscle": "Lats & upper back", "sets": 3, "repMin": 6, "repMax": 8, "effort": "RPE 8", "rest": "2 min", "restSec": 120, "core": true, "baseline": "70 x 10 (Oct 2025, old gym machine)", "notes": "Plus Fitness has the cable version", "order": 8}, {"id": "p10", "day": "Sun", "session": "Back Heavy", "type": "Heavy", "exercise": "Rack pull", "muscle": "Posterior chain", "sets": 3, "repMin": 4, "repMax": 6, "effort": "RPE 8-9", "rest": "3 min", "restSec": 180, "core": true, "baseline": "101.65 x 6 (Jul); 106.5 x 2 (2025)", "notes": "Traps, glutes, hamstrings, lower back", "order": 9}, {"id": "p11", "day": "Sun", "session": "Back Heavy", "type": "Heavy", "exercise": "Machine fly, rear delt setting", "muscle": "Rear delts", "sets": 3, "repMin": 8, "repMax": 12, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": false, "baseline": "39 x 10 (26 Oct, Fitness First). Plus machine is a new baseline", "notes": "Same machine as the pec fly, rear setting", "order": 10}, {"id": "p12", "day": "Sun", "session": "Back Heavy", "type": "Heavy", "exercise": "Single-arm cable triceps extension", "muscle": "Triceps", "sets": 3, "repMin": 8, "repMax": 10, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": false, "baseline": "Logged 2025. Load not on file", "notes": "Triceps sit on back days by choice", "order": 11}, {"id": "p13", "day": "Sun", "session": "Back Heavy", "type": "Heavy", "exercise": "Prone leg curl", "muscle": "Hamstrings", "sets": 3, "repMin": 8, "repMax": 10, "effort": "RPE 8", "rest": "90 s", "restSec": 90, "core": false, "baseline": "27 x 12 (26 Oct, Fitness First)", "notes": "", "order": 12}, {"id": "p14", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Plate-loaded lateral raise machine", "muscle": "Mid delts", "sets": 4, "repMin": 10, "repMax": 12, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": true, "baseline": "Not logged", "notes": "Mid delts are a priority. Rotate with DB variations", "order": 13}, {"id": "p15", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Landmine press (seated or half-kneeling)", "muscle": "Front delts", "sets": 3, "repMin": 8, "repMax": 12, "effort": "RPE 8", "rest": "90 s", "restSec": 90, "core": true, "baseline": "Not logged. DB front delt press 7.5 x 12 (24 Oct)", "notes": "Front delt trial, 8-12 weeks", "order": 14}, {"id": "p16", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Low-to-high cable crossover", "muscle": "Chest", "sets": 3, "repMin": 8, "repMax": 12, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": false, "baseline": "Not logged", "notes": "Upper chest. Swap: incline DB fly", "order": 15}, {"id": "p17", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Plate raise (knee on bench, angled forward)", "muscle": "Traps", "sets": 3, "repMin": 10, "repMax": 12, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": false, "baseline": "Plate shrug 25 x 12 (24 Oct)", "notes": "Upper traps", "order": 16}, {"id": "p18", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Barbell shrug", "muscle": "Traps", "sets": 3, "repMin": 8, "repMax": 12, "effort": "RPE 8", "rest": "90 s", "restSec": 90, "core": false, "baseline": "Not logged. Trap machine 50 x 12 (19 Oct, other gym)", "notes": "Use the trap machine at another gym when you visit one", "order": 17}, {"id": "p19", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Cable rear lateral raise", "muscle": "Rear delts", "sets": 3, "repMin": 12, "repMax": 15, "effort": "RPE 8", "rest": "60 s", "restSec": 60, "core": false, "baseline": "10 x 12 (24 Oct PR); 7.5 x 12 (28 Oct)", "notes": "Add weight at 15 clean reps", "order": 18}, {"id": "p20", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Glute drive", "muscle": "Glutes", "sets": 3, "repMin": 8, "repMax": 12, "effort": "RPE 8", "rest": "2 min", "restSec": 120, "core": true, "baseline": "180 x 8 (Sep 2025, old gym; units unconfirmed)", "notes": "Kept for this day by choice", "order": 19}, {"id": "p21", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Abductor", "muscle": "Glutes", "sets": 2, "repMin": 12, "repMax": 15, "effort": "RPE 8", "rest": "60 s", "restSec": 60, "core": false, "baseline": "Not logged", "notes": "Outer thigh and glute sculpt", "order": 20}, {"id": "p22", "day": "Mon", "session": "Additions", "type": "Additions", "exercise": "Adductor", "muscle": "Inner thigh", "sets": 2, "repMin": 12, "repMax": 15, "effort": "RPE 8", "rest": "60 s", "restSec": 60, "core": false, "baseline": "Not logged", "notes": "Inner thigh sculpt", "order": 21}, {"id": "p23", "day": "Wed", "session": "Top Shelf Medium", "type": "Medium", "exercise": "Standing barbell overhead press", "muscle": "Front delts", "sets": 3, "repMin": 8, "repMax": 10, "effort": "RPE 7-8", "rest": "2 min", "restSec": 120, "core": true, "baseline": "30 x 12 (28 Oct)", "notes": "About 80% of Saturday's load", "order": 22}, {"id": "p24", "day": "Wed", "session": "Top Shelf Medium", "type": "Medium", "exercise": "Incline supinated DB press", "muscle": "Chest", "sets": 3, "repMin": 10, "repMax": 12, "effort": "RPE 7-8", "rest": "2 min", "restSec": 120, "core": true, "baseline": "Incline DB chest press 25 x 11 and 25 x 9 (24 Oct)", "notes": "Per hand. 2025 units still to confirm", "order": 23}, {"id": "p25", "day": "Wed", "session": "Top Shelf Medium", "type": "Medium", "exercise": "DB cross-body chest press", "muscle": "Chest", "sets": 3, "repMin": 10, "repMax": 12, "effort": "RPE 7-8", "rest": "90 s", "restSec": 90, "core": false, "baseline": "Cross-body chest raise 25 x 12 (Oct 2025)", "notes": "Inner chest. Swap: cross-body raise or cable crossover", "order": 24}, {"id": "p26", "day": "Wed", "session": "Top Shelf Medium", "type": "Medium", "exercise": "Cable lateral raise, 45 degree front-grab", "muscle": "Mid delts", "sets": 3, "repMin": 12, "repMax": 15, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": true, "baseline": "New. Start light", "notes": "Cable at wrist height, grab in front, turn 45 degrees, raise away from the cable", "order": 25}, {"id": "p27", "day": "Wed", "session": "Top Shelf Medium", "type": "Medium", "exercise": "Barbell curl", "muscle": "Biceps", "sets": 3, "repMin": 8, "repMax": 10, "effort": "RPE 7-8", "rest": "90 s", "restSec": 90, "core": false, "baseline": "Target 70 x 8 (Sep 2025). Not logged in 2026", "notes": "", "order": 26}, {"id": "p28", "day": "Wed", "session": "Top Shelf Medium", "type": "Medium", "exercise": "Incline DB curl", "muscle": "Biceps", "sets": 3, "repMin": 10, "repMax": 12, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": false, "baseline": "7.5 x 12 (24 Oct)", "notes": "Stretch position, bicep peaks", "order": 27}, {"id": "p29", "day": "Wed", "session": "Top Shelf Medium", "type": "Medium", "exercise": "Hack squat", "muscle": "Quads", "sets": 4, "repMin": 8, "repMax": 12, "effort": "RPE 7-8", "rest": "2 min", "restSec": 120, "core": true, "baseline": "68 x 8 (12 Oct, total sled load)", "notes": "Confirm the empty sled weight at Plus", "order": 28}, {"id": "p30", "day": "Thu", "session": "Back Medium", "type": "Medium", "exercise": "Wide-grip flat-back bent-over barbell row", "muscle": "Lats & upper back", "sets": 4, "repMin": 8, "repMax": 12, "effort": "RPE 7-8", "rest": "2 min", "restSec": 120, "core": true, "baseline": "40 x 10 (26 Oct); 88.18 x 8 (Oct 2025)", "notes": "", "order": 29}, {"id": "p31", "day": "Thu", "session": "Back Medium", "type": "Medium", "exercise": "Neutral-grip cable lat pulldown", "muscle": "Lats & upper back", "sets": 4, "repMin": 10, "repMax": 12, "effort": "RPE 7-8", "rest": "90 s", "restSec": 90, "core": true, "baseline": "Logged 2025 and 2026. Pull loads from FitNotes", "notes": "", "order": 30}, {"id": "p32", "day": "Thu", "session": "Back Medium", "type": "Medium", "exercise": "Straight-arm cable pulldown", "muscle": "Lats & upper back", "sets": 3, "repMin": 12, "repMax": 15, "effort": "RPE 8", "rest": "60 s", "restSec": 60, "core": false, "baseline": "Logged 2026. Pull load from FitNotes", "notes": "Lat stretch", "order": 31}, {"id": "p33", "day": "Thu", "session": "Back Medium", "type": "Medium", "exercise": "Chest-supported incline DB rear raise", "muscle": "Rear delts", "sets": 3, "repMin": 12, "repMax": 15, "effort": "RPE 8", "rest": "60 s", "restSec": 60, "core": true, "baseline": "New. Start light", "notes": "Bench one notch down from vertical, arms hang forward", "order": 32}, {"id": "p34", "day": "Thu", "session": "Back Medium", "type": "Medium", "exercise": "DB single-arm overhead triceps extension", "muscle": "Triceps", "sets": 3, "repMin": 10, "repMax": 12, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": false, "baseline": "10 x 12 (26 Oct)", "notes": "", "order": 33}, {"id": "p35", "day": "Thu", "session": "Back Medium", "type": "Medium", "exercise": "Prone leg curl", "muscle": "Hamstrings", "sets": 3, "repMin": 10, "repMax": 12, "effort": "RPE 7-8", "rest": "90 s", "restSec": 90, "core": false, "baseline": "27 x 12 (26 Oct, Fitness First)", "notes": "", "order": 34}, {"id": "p36", "day": "Thu", "session": "Back Medium", "type": "Medium", "exercise": "Leg extension", "muscle": "Quads", "sets": 3, "repMin": 12, "repMax": 15, "effort": "RPE 8", "rest": "60-90 s", "restSec": 60, "core": false, "baseline": "35 x 8 (24 Oct); 40 x 8 (12 Oct)", "notes": "", "order": 35}];
+const GYMS = ['Plus Fitness','Fitness First','Other'];
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const SCHEDULE = {Sat:'Top Shelf Heavy',Sun:'Back Heavy',Mon:'Additions',Tue:'Cardio',Wed:'Top Shelf Medium',Thu:'Back Medium',Fri:'Cardio'};
+const SESSIONS = [
+  {name:'Top Shelf Heavy',day:'Sat',off:0,heavy:true},
+  {name:'Back Heavy',day:'Sun',off:1,heavy:true},
+  {name:'Additions',day:'Mon',off:2},
+  {name:'Top Shelf Medium',day:'Wed',off:4},
+  {name:'Back Medium',day:'Thu',off:5}];
+const CARDIO = {Tue:'Zone 2 walk or jog, 30–45 min (129–139 BPM).',Fri:'Zone 2, or intervals every second week. Drop to zone 2 if Saturday feels flat.'};
+const DELOAD_QS = ['Dreading training?','Sleep worse than usual?','Loads falling or stalling?','Stress higher than usual?','Unusual aches or niggles?'];
+
+/* ---------- dates ---------- */
+const pad = n => String(n).padStart(2,'0');
+const ds = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pd = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const today = () => ds(new Date());
+const addDays = (s,n) => { const d = pd(s); d.setDate(d.getDate()+n); return ds(d); };
+const dow = s => DAYS[pd(s).getDay()];
+const weekStart = s => { const d = pd(s); const back = (d.getDay()+1)%7; d.setDate(d.getDate()-back); return ds(d); };
+const fmt = s => { if(!s) return ''; const [y,m,d] = s.split('-'); return d+'/'+m+'/'+y; };
+const fmtShort = s => { const [y,m,d] = s.split('-'); return d+'/'+m; };
+const daysBetween = (a,b) => Math.round((pd(b)-pd(a))/864e5);
+
+/* ---------- storage (IndexedDB, memory fallback) ---------- */
+const STORES = ['kv','workouts','sets','body'];
+let idb = null;
+function openDB(){ return new Promise(res => { try { const r = indexedDB.open('dene-training',1);
+  r.onupgradeneeded = () => STORES.forEach(s => { if(!r.result.objectStoreNames.contains(s)) r.result.createObjectStore(s,{keyPath:'id'}); });
+  r.onsuccess = () => { idb = r.result; res(); }; r.onerror = () => res(); } catch(e){ res(); } }); }
+function getAll(s){ if(!idb) return Promise.resolve([]); return new Promise(res => { try { const q = idb.transaction(s).objectStore(s).getAll(); q.onsuccess = () => res(q.result||[]); q.onerror = () => res([]); } catch(e){ res([]); } }); }
+function put(s,o){ if(idb) try { idb.transaction(s,'readwrite').objectStore(s).put(o); } catch(e){} }
+function del(s,id){ if(idb) try { idb.transaction(s,'readwrite').objectStore(s).delete(id); } catch(e){} }
+function clearAll(){ if(idb) STORES.forEach(s => { try { idb.transaction(s,'readwrite').objectStore(s).clear(); } catch(e){} }); }
+
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const DEFAULTS = () => ({gym:'Plus Fitness',coreOnly:false,introOn:true,introEnd:'2026-11-06',startDate:today(),
+  blockStart:'2026-11-07',blockLen:5,autoDeload:true,deloadUntil:null,highRepUntil:null,checkins:[],machines:{},overrides:{},stall:{}});
+const S = {settings:null,plan:[],workouts:[],sets:[],body:[]};
+const saveSettings = () => put('kv',{id:'settings',v:S.settings});
+const savePlan = () => put('kv',{id:'plan',v:S.plan});
+function saveWorkout(w){ const i = S.workouts.findIndex(x => x.id===w.id); if(i<0) S.workouts.push(w); else S.workouts[i]=w; put('workouts',w); }
+function saveSet(x){ S.sets.push(x); put('sets',x); }
+function removeSet(id){ S.sets = S.sets.filter(x => x.id!==id); del('sets',id); }
+
+async function load(){
+  await openDB();
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch(e){}
+  const kv = await getAll('kv');
+  const st = kv.find(x => x.id==='settings'), pl = kv.find(x => x.id==='plan');
+  S.settings = Object.assign(DEFAULTS(), st ? st.v : {});
+  S.plan = pl ? pl.v : JSON.parse(JSON.stringify(SEED));
+  if(!st) saveSettings(); if(!pl) savePlan();
+  S.workouts = await getAll('workouts'); S.sets = await getAll('sets'); S.body = await getAll('body');
+}
+
+/* ---------- logic ---------- */
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = v => { const n = parseFloat(String(v).replace(',','.')); return isFinite(n) ? n : null; };
+const r1 = n => Math.round(n*10)/10;
+const kg = n => (Math.round(n*100)/100).toString();
+const e1rm = (w,r) => (!w||!r) ? 0 : r===1 ? w : w*(1+r/30);
+const isRaise = it => /raise/i.test(it.exercise) && /delt/i.test(it.muscle||'');
+const isDB = name => /\bDB\b|dumbbell/i.test(name);
+const introActive = () => S.settings.introOn && today() <= S.settings.introEnd;
+function blockWeek(d){ d = d||today(); const bs = S.settings.blockStart; if(!bs || d<bs) return 0; return Math.floor(daysBetween(bs,d)/7) % S.settings.blockLen + 1; }
+function blockNo(d){ d = d||today(); return Math.floor(daysBetween(S.settings.blockStart,d)/7/S.settings.blockLen)+1; }
+const autoDeloadWeek = () => S.settings.autoDeload && blockWeek()===S.settings.blockLen;
+const deloadActive = () => !!((S.settings.deloadUntil && today() <= S.settings.deloadUntil) || autoDeloadWeek());
+const highRepActive = () => !!(S.settings.highRepUntil && today() <= S.settings.highRepUntil) && !deloadActive();
+function checkinDue(){
+  const bw = blockWeek(); let kind = null;
+  if(bw===S.settings.blockLen-1) kind = 'pre'; else if(bw===1 && blockNo()>1) kind = 'post';
+  if(!kind) return null;
+  const ws = weekStart(today());
+  return (S.settings.checkins||[]).some(c => c.date>=ws) ? null : kind;
+}
+function effSets(it){ const w = activeWorkout(); const dl = w ? w.deload : deloadActive(); let n = it.sets; if(introActive()) n = Math.max(1,n-1); if(dl) n = Math.max(1,Math.ceil(it.sets/2)); return n; }
+const sessionItems = (name, coreOnly) => S.plan.filter(p => p.session===name && (!coreOnly || p.core)).sort((a,b) => a.order-b.order);
+const machineFor = (ex,gym) => S.settings.machines[ex.toLowerCase()+'|'+gym] || '';
+const keyOf = (ex,gym,machine) => ex.toLowerCase()+'|'+gym+'|'+(machine||'').trim().toLowerCase();
+const setKey = x => keyOf(x.exercise,x.gym,x.machine);
+const wById = id => S.workouts.find(w => w.id===id);
+
+function lastResult(ex,gym,machine,excludeWid){
+  const k = keyOf(ex,gym,machine);
+  const prev = S.sets.filter(x => setKey(x)===k && x.workoutId!==excludeWid);
+  if(!prev.length) return null;
+  const lastDate = prev.reduce((m,x) => x.date>m ? x.date : m, '');
+  const wid = prev.filter(x => x.date===lastDate).sort((a,b)=>b.ts-a.ts)[0].workoutId;
+  const sets = prev.filter(x => x.workoutId===wid).sort((a,b) => a.ts-b.ts);
+  return {date:lastDate, sets};
+}
+/* ---------- prescription (double progression + stalls) ---------- */
+function stepFor(it,w){ if(isDB(it.exercise)) return w<10 ? 1 : 2.5; if(/cable/i.test(it.exercise)) return 1.25; return 2.5; }
+const floorTo = (w,s) => Math.floor(w/s+1e-9)*s;
+function exHistory(it,gym,machine,excludeWid){
+  const k = keyOf(it.exercise,gym,machine), by = {};
+  S.sets.forEach(x => { if(setKey(x)===k && x.workoutId!==excludeWid) (by[x.workoutId] = by[x.workoutId]||[]).push(x); });
+  return Object.keys(by).map(wid => ({wid, w:wById(wid)||{}, sets:by[wid].sort((a,b)=>a.ts-b.ts)}))
+    .filter(h => !h.w.deload && !h.w.highRep).map(h => (h.date = h.sets[0].date, h.ts = h.sets[0].ts, h))
+    .sort((a,b) => a.date<b.date?1:a.date>b.date?-1:b.ts-a.ts);
+}
+function workWeight(sets){ const c = {}; sets.forEach(x => c[x.weight] = (c[x.weight]||0)+1); return +Object.keys(c).sort((a,b) => c[b]-c[a] || b-a)[0]; }
+function metRx(h,r){ const s = h.sets.slice(0,r.sets); return s.length>=r.sets && s.every(x => x.weight>=r.weight-0.01 && x.reps>=r.reps); }
+function computeRx(it,w){
+  const machine = machineFor(it.exercise,w.gym), k = keyOf(it.exercise,w.gym,machine);
+  const H = exHistory(it,w.gym,machine,w.id);
+  const sets = effSets(it);
+  if(!H.length) return null;
+  const L = H[0], Lrx = L.w.rx && L.w.rx[k];
+  let stall = 0; for(const h of H){ const r = h.w.rx && h.w.rx[k]; if(!r || metRx(h,r)) break; stall++; }
+  const W = workWeight(L.sets), st = stepFor(it,W), minR = Math.min(...L.sets.map(x => x.reps));
+  const need = Lrx ? Lrx.sets : sets, cap = isRaise(it) ? Math.max(15,it.repMax) : it.repMax;
+  const enough = L.sets.length >= need;
+  const up = enough && (isRaise(it) ? L.sets.every(x => x.reps>=15) : L.sets.every(x => x.reps>=it.repMax && (x.rpe==null || x.rpe<=8)));
+  let rx;
+  if(up) rx = W>0 ? {weight:W+st, reps:it.repMin, why:`+${kg(st)} kg: every set hit ${isRaise(it)?'15+ clean reps':'the top of the range at RPE 8 or lower'} last time`}
+                  : {weight:0, reps:Math.min(cap,minR+1), why:'Bodyweight at the top of the range: add load when it feels solid'};
+  else if(Lrx && !metRx(L,Lrx)) rx = {weight:Lrx.weight, reps:Lrx.reps, why:'Same target again: last time fell short'};
+  else rx = {weight:W, reps:Math.min(cap, Math.max(it.repMin, minR+1)), why:'Same weight, aim for one more rep'};
+  if(Lrx && Lrx.light && Lrx.returnTo) rx = {weight:Lrx.returnTo.weight, reps:Lrx.returnTo.reps, why:'Back to your target after the light session'};
+  rx.stall = stall;
+  if(stall>=2 && Lrx && Lrx.weight>0){
+    const dec = S.settings.stall[k], decided = dec && dec.wid===L.wid;
+    const lightRecent = H.slice(0,6).some(h => h.w.rx && h.w.rx[k] && h.w.rx[k].light);
+    if(lightRecent){ if(!decided) rx.volOffer = true; }
+    else {
+      const light = {weight:Math.max(st, Math.round(Lrx.weight*0.9/st)*st), reps:Lrx.reps, light:true, returnTo:{weight:Lrx.weight, reps:Lrx.reps}};
+      if(stall>=3 && !(decided && dec.action==='undo')) Object.assign(rx, light, {auto:true, why:`Stalled ${stall} sessions in a row, so this is one light session at about 90%. Next time you go straight back to ${kg(Lrx.weight)} kg. Chasing the number while fatigued usually digs the hole deeper.`});
+      else if(decided && dec.action==='accept') Object.assign(rx, light, {why:`One light session at about 90%. Next time, straight back to ${kg(Lrx.weight)} kg × ${Lrx.reps}.`});
+      else if(!decided) rx.offer = light;
+    }
+  }
+  if(w.deload){ rx.why = 'Deload: same weight, half the sets, stop about 1 rep earlier than usual'; ['offer','auto','volOffer','light','returnTo'].forEach(x => delete rx[x]); }
+  else if(w.highRep){ const e1 = Math.max(...L.sets.map(x => e1rm(x.weight,x.reps))); rx = {weight: e1>0 ? Math.max(st, floorTo(e1/(1+17/30), st)) : 0, reps:15, stall, why:'High-rep week: about 15 reps with 2 in reserve, to ease aches'}; }
+  rx.sets = sets; rx.lastWid = L.wid;
+  return rx;
+}
+function rxFor(it,w){
+  const k = keyOf(it.exercise,w.gym,machineFor(it.exercise,w.gym));
+  w.rx = w.rx || {};
+  if(!(k in w.rx)){ w.rx[k] = computeRx(it,w); saveWorkout(w); }
+  return w.rx[k];
+}
+function stallDecide(it,action){
+  const w = activeWorkout(), k = keyOf(it.exercise,w.gym,machineFor(it.exercise,w.gym));
+  const r = w.rx && w.rx[k]; if(!r) return;
+  S.settings.stall[k] = {wid:r.lastWid, action}; saveSettings();
+  if(action==='trim'){ it.sets = Math.max(1,it.sets-1); savePlan(); toast(it.exercise+': now '+it.sets+' sets a week'); }
+  delete w.rx[k]; saveWorkout(w); V.entry[it.id] = undefined; render();
+}
+function stalledRecently(){
+  const from = addDays(today(),-7), keys = new Set();
+  S.workouts.filter(w => w.date>=from && w.rx).forEach(w => Object.entries(w.rx).forEach(([k,r]) => { if(r && r.stall>=2) keys.add(k.split('|')[0]); }));
+  return keys.size;
+}
+function prCheck(ex,gym,machine,w,r){
+  const k = keyOf(ex,gym,machine);
+  const prev = S.sets.filter(x => setKey(x)===k);
+  if(!prev.length) return {first:true,types:[]};
+  const types = [];
+  const maxW = Math.max(...prev.map(x => x.weight||0));
+  const maxE = Math.max(...prev.map(x => e1rm(x.weight,x.reps)));
+  if(w>0 && w>maxW) types.push('weight');
+  if(w>0 && e1rm(w,r)>maxE+0.01) types.push('e1RM');
+  if(!w){ const maxR = Math.max(...prev.filter(x=>!x.weight).map(x=>x.reps),0); if(r>maxR) types.push('reps'); }
+  return {first:false,types};
+}
+
+/* consistency */
+function sessionStatus(ws,sess){
+  const ov = S.settings.overrides[ws+'|'+sess.name];
+  if(ov) return ov;
+  const we = addDays(ws,6);
+  const ws_ = S.workouts.filter(w => w.session===sess.name && w.date>=ws && w.date<=we && w.status==='done');
+  if(ws_.some(w => w.mode==='Full')) return 'Full';
+  if(ws_.some(w => w.mode==='Core only')) return 'Core only';
+  const planned = addDays(ws,sess.off), end = windowEnd(ws,sess), t = today();
+  if(end < S.settings.startDate) return '';
+  if(t > end) return 'Missed';
+  if(t >= planned) return 'Due';
+  return '';
+}
+function windowEnd(ws,sess){ const a = addDays(ws,sess.off+2), b = addDays(ws,6); return a<b ? a : b; }
+function queue(){
+  const ws = weekStart(today()), prev = addDays(ws,-7);
+  let order = [...SESSIONS];
+  if(prev >= weekStart(S.settings.startDate) && sessionStatus(prev,SESSIONS[1])==='Missed' && sessionStatus(prev,SESSIONS[0])!=='Missed') order = [SESSIONS[1],SESSIONS[0],...SESSIONS.slice(2)];
+  return order.map(s => ({sess:s, st:sessionStatus(ws,s), end:windowEnd(ws,s)})).filter(q => !doneSt(q.st) && q.st!=='Missed' && q.end >= today());
+}
+const doneSt = s => s==='Full' || s==='Core only';
+function streak(){
+  const cur = weekStart(today()); let n = 0, ws = cur;
+  const start = weekStart(S.settings.startDate);
+  while(ws >= start){
+    const a = sessionStatus(ws,SESSIONS[0]), b = sessionStatus(ws,SESSIONS[1]);
+    if(doneSt(a) && doneSt(b)) n++;
+    else if(ws!==cur) break;
+    ws = addDays(ws,-7);
+  }
+  return n;
+}
+function deloadDue(){
+  return false;
+}
+
+/* ---------- UI state ---------- */
+const V = {tab:'today', pick:null, focus:null, planOpen:null, entry:{}};
+const app = document.getElementById('app');
+function nav(){
+  const tabs = [['today','◉','Today'],['week','▦','Week'],['plan','☰','Plan'],['more','⚙','More']];
+  document.getElementById('nav').innerHTML = tabs.map(([k,i,l]) => `<button data-act="tab" data-k="${k}" class="${(V.tab===k||(V.tab==='session'&&k==='today'))?'on':''}"><i>${i}</i>${l}</button>`).join('');
+}
+function render(){
+  nav();
+  const f = {today:rToday,session:rSession,week:rWeek,plan:rPlan,more:rMore}[V.tab];
+  app.innerHTML = f();
+}
+function toast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.style.display='block'; clearTimeout(toast.h); toast.h = setTimeout(()=>t.style.display='none',3000); }
+function sheet(html){ document.getElementById('sheetBody').innerHTML = html; document.getElementById('sheet').classList.remove('hidden'); }
+function closeSheet(){ document.getElementById('sheet').classList.add('hidden'); }
+document.getElementById('sheet').addEventListener('click', e => { if(e.target.id==='sheet') closeSheet(); });
+const activeWorkout = () => S.workouts.find(w => w.status==='active');
+
+/* ---------- Today ---------- */
+function rToday(){
+  const t = today(), d = dow(t), sched = SCHEDULE[d];
+  const st = S.settings;
+  if(!V.pick){ const q0 = queue()[0]; V.pick = q0 ? q0.sess.name : 'Cardio'; }
+  const act = activeWorkout();
+  let h = `<h1>${d} ${fmt(t)}</h1>`;
+  const sk = streak();
+  h += `<div class="mute small">Heavy-week streak: <b style="color:var(--ok)">${sk}</b> ${sk===1?'week':'weeks'}</div>`;
+  if(act) h += `<div class="banner blue"><b>Session in progress:</b> ${esc(act.session)} (${fmt(act.date)})<div style="margin-top:8px"><button class="primary full" data-act="resume">Resume session</button></div></div>`;
+  if(introActive()) h += `<div class="banner blue small">Intro weeks: last set of every exercise is dropped until ${fmt(st.introEnd)}.</div>`;
+  if(blockWeek()>0) h += `<div class="small mute">Block ${blockNo()} · week ${blockWeek()} of ${st.blockLen}${st.autoDeload?' · deload in week '+st.blockLen:''}</div>`;
+  if(deloadActive()) h += `<div class="banner small"><b>Deload week</b>${autoDeloadWeek()?' (planned)':' until '+fmt(st.deloadUntil)}: same weights, half the sets, about 1 RPE easier. Let the fatigue go.</div>`;
+  if(highRepActive()) h += `<div class="banner small"><b>High-rep week</b> until ${fmt(st.highRepUntil)}: normal sets, 12–20 reps, lighter loads, to ease aches.</div>`;
+  const ci = checkinDue();
+  if(ci) h += `<div class="banner blue"><b>${ci==='pre'?'Week '+blockWeek()+' check-in':'Post-deload check-in'}</b>: ${ci==='pre'?'how are you coming into the deload?':'how do you feel after the deload?'} Five quick questions.<div style="margin-top:8px"><button class="full" data-act="deload" data-k="${ci}">Start check-in</button></div></div>`;
+  const Q = queue();
+  Q.filter(q => q.sess.heavy && q.st==='Due').forEach(q => {
+    const left = daysBetween(t,q.end);
+    h += `<div class="banner red"><b>${esc(q.sess.name)}</b>: ${left===0?'last day to do it is today':left===1?'do it by tomorrow ('+dow(q.end)+')':'due by '+dow(q.end)+' '+fmtShort(q.end)}. Move the cardio, not the lift.</div>`;
+  });
+  if(stalledRecently()>=3) h += `<div class="banner"><b>${stalledRecently()} lifts have stalled this week.</b> That usually points to fatigue, not the lifts.<div style="margin-top:8px"><button class="full" data-act="deload">Run the deload check now</button></div></div>`;
+  else if(deloadDue()) h += `<div class="banner"><b>Deload check due.</b> Five quick questions.<div style="margin-top:8px"><button class="full" data-act="deload">Start check</button></div></div>`;
+
+  const wsT = weekStart(t);
+  h += `<div class="card"><div class="lbl">${Q.length?'Up next: '+esc(Q[0].sess.name):'All sessions done or closed this week'}</div><div class="chips" style="margin-top:6px">` +
+    SESSIONS.map(s => { const st = sessionStatus(wsT,s); const mark = doneSt(st)?' ✓':st==='Missed'?' ✕':''; return `<button class="${V.pick===s.name?'on':''}" data-act="pick" data-s="${esc(s.name)}">${esc(s.name)}${mark}</button>`; }).join('') +
+    `<button class="${V.pick==='Cardio'?'on':''}" data-act="pick" data-s="Cardio">Cardio</button></div>
+    <div class="small mute" style="margin-top:6px">Any order, any day. Each session has 48 hours past its usual day (${SESSIONS.map(s=>s.day).join(', ')}) before it counts as missed. Week ends Friday.</div>`;
+  if((d==='Tue'||d==='Fri') && V.pick!=='Cardio') h += `<div class="small" style="margin-top:6px">Cardio day: ${CARDIO[d]} Skip it if you're catching up a lift.</div>`;
+  h += `</div>`;
+
+  if(V.pick==='Cardio'){
+    h += `<div class="card"><h3>Cardio day</h3><p class="mute">${CARDIO[d]||CARDIO.Tue}</p></div>`;
+    return h;
+  }
+  const sess = SESSIONS.find(s => s.name===V.pick);
+  const ws = weekStart(t), status = sessionStatus(ws,sess);
+  h += `<div class="card"><div class="lbl">Gym</div><div class="seg" style="margin-top:6px">` +
+    GYMS.map(g => `<button class="${st.gym===g?'on':''}" data-act="gym" data-g="${esc(g)}">${esc(g)}</button>`).join('') + `</div>
+    <div class="switch" style="margin-top:6px"><div><b>Core only</b><div class="small mute">Hides Optional exercises. Still counts as done.</div></div><button class="tg ${st.coreOnly?'on':''}" data-act="core" aria-label="Core only"></button></div></div>`;
+  const items = sessionItems(sess.name, st.coreOnly);
+  const total = items.reduce((a,it) => a+effSets(it),0);
+  h += `<div class="card"><div class="row between"><h3>${esc(sess.name)}</h3><span class="mute small">${items.length} exercises · ${total} sets</span></div>`;
+  if(doneSt(status)) h += `<div class="small" style="color:var(--ok);margin-top:4px">Done this week: ${status}</div>`;
+  h += items.map(it => `<div class="list-item"><div><div>${esc(it.exercise)}</div><div class="small mute">${effSets(it)} × ${it.repMin}–${it.repMax} · ${esc(it.effort)}</div></div><span class="tag ${it.core?'core':'opt'}">${it.core?'Core':'Optional'}</span></div>`).join('');
+  h += `</div>`;
+  h += act ? '' : `<button class="primary full" data-act="start">Start ${esc(sess.name)}</button>`;
+  return h;
+}
+
+/* ---------- Session ---------- */
+function rSession(){
+  const w = activeWorkout();
+  if(!w){ V.tab='today'; return rToday(); }
+  const items = sessionItems(w.session, w.coreOnly);
+  const wsets = S.sets.filter(x => x.workoutId===w.id);
+  if(!V.focus || !items.find(i => i.id===V.focus)){
+    const nxt = items.find(it => wsets.filter(x => x.exercise===it.exercise).length < effSets(it));
+    V.focus = (nxt||items[0]||{}).id;
+  }
+  let h = `<div class="row between"><div><h1>${esc(w.session)}</h1><div class="mute small">${esc(w.gym)} · ${fmt(w.date)}</div></div>
+    <button class="mini" data-act="wCore">Core only: ${w.coreOnly?'on':'off'}</button></div>`;
+  if(introActive()) h += `<div class="small mute">Intro weeks: last set dropped.</div>`;
+  if(w.deload) h += `<div class="small" style="color:var(--core)">Deload: same weights, half the sets, about 1 RPE easier.</div>`;
+  if(w.highRep) h += `<div class="small" style="color:var(--core)">High-rep week: 12–20 reps, lighter loads.</div>`;
+  items.forEach(it => {
+    const target = effSets(it);
+    const mine = wsets.filter(x => x.exercise===it.exercise).sort((a,b) => a.ts-b.ts);
+    const focus = V.focus===it.id;
+    const machine = machineFor(it.exercise,w.gym);
+    const last = lastResult(it.exercise,w.gym,machine,w.id);
+    const rx = rxFor(it,w);
+    const done = mine.length >= target;
+    h += `<div class="card ex ${focus?'focus':''} ${done&&!focus?'done':''}">
+      <div class="exhead" data-act="focus" data-id="${it.id}"><div><h3>${esc(it.exercise)}</h3>
+      <div class="small mute">${target} × ${w.highRep?'12–20':it.repMin+'–'+it.repMax} · ${esc(w.deload?it.effort+' (−1 RPE)':it.effort)} · rest ${esc(it.rest)}${isDB(it.exercise)?' · kg per hand':''}</div></div>
+      <div class="count" style="color:${done?'var(--ok)':'var(--txt)'}">${mine.length}/${target}</div></div>`;
+    h += `<div class="small" style="margin-top:6px">${last ? `Last here ${fmt(last.date)}: <b>${last.sets.map(x => kg(x.weight)+'×'+x.reps+(x.rpe!=null?' @'+x.rpe:'')).join(', ')}</b>` : `<span class="mute">Nothing logged at ${esc(w.gym)}${machine?' on '+esc(machine):''} yet. Baseline: ${esc(it.baseline)}</span>`}</div>`;
+    if(rx) h += `<div class="rx"><b>Target: ${target} × ${rx.weight>0?kg(rx.weight)+' kg':'bodyweight'} × ${rx.reps}</b><div class="small ${rx.auto?'warn':'mute'}">${esc(rx.why)}</div>${rx.auto?`<button class="mini" style="margin-top:6px" data-act="stall" data-id="${it.id}" data-a="undo">Undo reset</button>`:''}</div>`;
+    if(rx && rx.offer) h += `<div class="banner small" style="margin:8px 0 0"><b>Stalled 2 sessions in a row.</b> Do one light session at ${kg(rx.offer.weight)} kg × ${rx.offer.reps}, then go straight back to ${kg(rx.offer.returnTo.weight)} kg?<div class="row" style="margin-top:8px"><button class="okb grow" data-act="stall" data-id="${it.id}" data-a="accept">Accept</button><button class="grow" data-act="stall" data-id="${it.id}" data-a="ignore">Ignore</button></div></div>`;
+    if(mine.length) h += `<ul class="sets">` + mine.map((x,i) => `<li><span>Set ${i+1}: <b>${kg(x.weight)} kg × ${x.reps}</b>${x.rpe!=null?' @ RPE '+x.rpe:''} ${x.pr&&x.pr.length?'<span class="tag pr">PR</span>':''}</span><button data-act="delSet" data-id="${x.id}">✕</button></li>`).join('') + `</ul>`;
+    if(rx && rx.volOffer) h += `<div class="banner small" style="margin:8px 0 0"><b>Stalled again soon after a light session.</b> That usually means too much weekly volume, not too little effort. Drop this exercise from ${it.sets} to ${Math.max(1,it.sets-1)} sets a week?<div class="row" style="margin-top:8px"><button class="okb grow" data-act="stall" data-id="${it.id}" data-a="trim" ${it.sets<=1?'disabled':''}>Drop a set</button><button class="grow" data-act="stall" data-id="${it.id}" data-a="ignore">Ignore</button></div></div>`;
+    if(focus) h += entryHtml(it,w,mine,last,machine,rx);
+    h += `</div>`;
+  });
+  h += `<button class="okb full" data-act="finish" style="margin-top:8px">Finish session</button>
+    <button class="full" data-act="cancelW" style="margin-top:8px">Discard session</button>`;
+  return h;
+}
+function entryHtml(it,w,mine,last,machine,rx){
+  const e = V.entry[it.id] || (() => {
+    if(rx) return V.entry[it.id] = {w:rx.weight, r:rx.reps, rpe:null};
+    const src = mine.length ? mine[mine.length-1] : null;
+    return V.entry[it.id] = {w: src ? src.weight : '', r: src ? src.reps : it.repMax, rpe: null};
+  })();
+  const rp = [6,7,8,9,10];
+  return `<div style="margin-top:10px">
+    ${it.notes?`<div class="small mute">${esc(it.notes)}</div>`:''}
+    <div class="lbl">Weight (kg${isDB(it.exercise)?', per hand':''})</div>
+    <div class="stepper"><button data-act="adj" data-f="w" data-d="-2.5">−2.5</button><button data-act="adj" data-f="w" data-d="-1">−1</button>
+      <input id="inW" inputmode="decimal" value="${esc(e.w)}" data-id="${it.id}" data-f="w"><button data-act="adj" data-f="w" data-d="1">+1</button><button data-act="adj" data-f="w" data-d="2.5">+2.5</button></div>
+    <div class="lbl">Reps</div>
+    <div class="stepper"><button data-act="adj" data-f="r" data-d="-1">−</button><input id="inR" inputmode="numeric" value="${esc(e.r)}" data-id="${it.id}" data-f="r"><button data-act="adj" data-f="r" data-d="1">+</button></div>
+    <div class="lbl">RPE (optional)</div>
+    <div class="seg rpe" style="margin-top:4px">${rp.map(v => `<button class="${e.rpe===v?'on':''}" data-act="rpe" data-v="${v}">${v}</button>`).join('')}</div>
+    ${rx?`<button class="okb full" style="margin-top:10px" data-act="logRx" data-id="${it.id}">✓ Done as set: ${rx.weight>0?kg(rx.weight)+' kg':'BW'} × ${rx.reps}</button>`:''}
+    <div class="row" style="margin-top:8px"><button class="primary grow" data-act="logSet" data-id="${it.id}">Log ${rx?'changed set':'set'}</button>
+      ${mine.length?`<button class="grow" data-act="repeat" data-id="${it.id}">Repeat last</button>`:''}</div>
+    <div class="lbl">Machine at ${esc(w.gym)} (keeps its loads separate)</div>
+    <input type="text" id="inM" placeholder="e.g. Hammer Strength, cable stack 2" value="${esc(machine)}" data-id="${it.id}">
+    ${!last?`<div class="small mute" style="margin-top:6px">Baseline: ${esc(it.baseline)}</div>`:''}
+  </div>`;
+}
+function logSet(it, w, weight, reps, rpe){
+  if(reps==null || reps<=0){ toast('Enter reps'); return; }
+  weight = weight||0;
+  const machine = machineFor(it.exercise,w.gym);
+  const pr = prCheck(it.exercise,w.gym,machine,weight,reps);
+  const idx = S.sets.filter(x => x.workoutId===w.id && x.exercise===it.exercise).length+1;
+  saveSet({id:uid(),workoutId:w.id,date:w.date,gym:w.gym,session:w.session,exercise:it.exercise,machine,idx,weight,reps,rpe,ts:Date.now(),pr:pr.types});
+  if(pr.types.length) toast('🏆 PR: '+pr.types.map(t => t==='weight'?'heaviest '+kg(weight)+' kg':t==='e1RM'?'est. 1RM '+r1(e1rm(weight,reps))+' kg':'most reps').join(', '));
+  const rxNow = w.rx && w.rx[keyOf(it.exercise,w.gym,machine)];
+  V.entry[it.id] = rxNow ? {w:rxNow.weight,r:rxNow.reps,rpe} : {w:weight,r:reps,rpe};
+  const target = effSets(it);
+  const n = S.sets.filter(x => x.workoutId===w.id && x.exercise===it.exercise).length;
+  if(n>=target){ const items = sessionItems(w.session,w.coreOnly); const nxt = items.find(x => S.sets.filter(s => s.workoutId===w.id && s.exercise===x.exercise).length < effSets(x)); if(nxt) V.focus = nxt.id; }
+  startTimer(it.restSec||90);
+  render();
+}
+
+/* ---------- timer ---------- */
+const T = {end:0,h:null,beeped:false};
+let actx = null;
+function startTimer(sec){
+  try { actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume && actx.resume(); } catch(e){}
+  T.end = Date.now()+sec*1000; T.beeped = false; clearInterval(T.h); T.h = setInterval(tick,250); tick();
+  document.getElementById('timer').classList.add('show');
+}
+function beep(){ try { if(!actx) return; [0,0.35,0.7].forEach(o => { const os = actx.createOscillator(), g = actx.createGain(); os.frequency.value = 880; os.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(0.25, actx.currentTime+o); g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+o+0.25); os.start(actx.currentTime+o); os.stop(actx.currentTime+o+0.3); }); } catch(e){} }
+function tick(){
+  const left = Math.round((T.end-Date.now())/1000), el = document.getElementById('timer');
+  const a = Math.abs(left);
+  document.getElementById('tt').textContent = (left<0?'+':'')+Math.floor(a/60)+':'+pad(a%60);
+  el.classList.toggle('end', left<=0);
+  if(left<=0 && !T.beeped){ T.beeped = true; beep(); try { navigator.vibrate && navigator.vibrate([250,120,250]); } catch(e){} }
+  if(left < -300) stopTimer();
+}
+function stopTimer(){ clearInterval(T.h); document.getElementById('timer').classList.remove('show'); }
+
+/* ---------- Week (consistency) ---------- */
+function rWeek(){
+  const cur = weekStart(today()); const start = weekStart(S.settings.startDate);
+  const weeks = []; for(let w = cur; w >= start && weeks.length < 26; w = addDays(w,-7)) weeks.push(w);
+  let both = 0, heavyDone = 0, heavyTot = 0;
+  weeks.forEach(w => { const a = sessionStatus(w,SESSIONS[0]), b = sessionStatus(w,SESSIONS[1]);
+    if(doneSt(a)&&doneSt(b)) both++; [a,b].forEach(s => { if(s==='Missed'||doneSt(s)){ heavyTot++; if(doneSt(s)) heavyDone++; } }); });
+  let h = `<h1>Consistency</h1><div class="row" style="gap:10px">
+    <div class="card grow"><div class="big" style="color:var(--ok)">${streak()}</div><div class="small mute">weeks in a row with both heavy days</div></div>
+    <div class="card grow"><div class="big">${heavyTot?Math.round(100*heavyDone/heavyTot):0}%</div><div class="small mute">heavy sessions done (${heavyDone}/${heavyTot})</div></div></div>`;
+
+  h += `<div class="small mute">Week starts Saturday. Tap a cell to set it by hand. F = Full, C = Core only, ✕ = Missed, • = due now.</div>
+    <table class="grid"><tr><th></th>${SESSIONS.map(s => `<th>${s.day}${s.heavy?'<br><span style="color:var(--acc)">H</span>':''}</th>`).join('')}</tr>`;
+  weeks.forEach(w => {
+    h += `<tr><td class="wk small">${fmtShort(w)}</td>` + SESSIONS.map(s => { const st = sessionStatus(w,s);
+      const cls = st==='Full'?'st-Full':st==='Core only'?'st-Core':st==='Missed'?'st-Missed':st==='Due'?'st-Today':'';
+      const lab = st==='Full'?'F':st==='Core only'?'C':st==='Missed'?'✕':st==='Due'?'•':'';
+      return `<td class="${cls}" data-act="cell" data-w="${w}" data-s="${esc(s.name)}">${lab}</td>`; }).join('') + `</tr>`;
+  });
+  h += `</table><div class="small mute" style="margin-top:6px">${both} of ${weeks.length} weeks with both heavy sessions.</div>`;
+  return h;
+}
+
+/* ---------- Plan ---------- */
+function rPlan(){
+  let h = `<h1>Plan</h1><div class="small mute">Edits apply from your next session. Totals: ${S.plan.reduce((a,p)=>a+p.sets,0)} sets a week, ${S.plan.filter(p=>p.core).reduce((a,p)=>a+p.sets,0)} core.</div>`;
+  SESSIONS.forEach(s => {
+    const items = sessionItems(s.name,false);
+    const open = V.planOpen===s.name;
+    h += `<div class="card"><div class="row between" data-act="planOpen" data-s="${esc(s.name)}"><h3>${s.day} · ${esc(s.name)}</h3><span class="mute">${items.reduce((a,i)=>a+i.sets,0)} sets ${open?'▾':'▸'}</span></div>`;
+    if(open){
+      h += items.map((it,i) => `<div class="list-item"><div class="grow" data-act="editItem" data-id="${it.id}"><div>${esc(it.exercise)}</div><div class="small mute">${it.sets} × ${it.repMin}–${it.repMax} · ${esc(it.muscle)} · <span style="color:${it.core?'var(--core)':'var(--mute)'}">${it.core?'Core':'Optional'}</span></div></div>
+        <button class="mini" data-act="move" data-id="${it.id}" data-d="-1" ${i===0?'disabled':''}>↑</button><button class="mini" data-act="move" data-id="${it.id}" data-d="1" ${i===items.length-1?'disabled':''}>↓</button></div>`).join('');
+      h += `<button class="full" style="margin-top:8px" data-act="addItem" data-s="${esc(s.name)}">+ Add exercise</button>`;
+    }
+    h += `</div>`;
+  });
+  return h;
+}
+function itemForm(it,isNew){
+  const muscles = [...new Set(S.plan.map(p => p.muscle))];
+  sheet(`<h2>${isNew?'Add exercise':'Edit or swap exercise'}</h2>
+    <label class="f">Exercise</label><input type="text" id="fEx" value="${esc(it.exercise)}" list="exList">
+    <datalist id="exList">${[...new Set(S.plan.map(p=>p.exercise))].map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+    <label class="f">Muscle (for volume)</label><input type="text" id="fMu" value="${esc(it.muscle)}" list="muList"><datalist id="muList">${muscles.map(m=>`<option value="${esc(m)}">`).join('')}</datalist>
+    <div class="row"><div class="grow"><label class="f">Sets</label><input type="number" id="fSets" inputmode="numeric" value="${it.sets}"></div>
+    <div class="grow"><label class="f">Reps min</label><input type="number" id="fMin" inputmode="numeric" value="${it.repMin}"></div>
+    <div class="grow"><label class="f">Reps max</label><input type="number" id="fMax" inputmode="numeric" value="${it.repMax}"></div></div>
+    <label class="f">Effort</label><input type="text" id="fEff" value="${esc(it.effort)}">
+    <div class="row"><div class="grow"><label class="f">Rest (label)</label><input type="text" id="fRest" value="${esc(it.rest)}"></div>
+    <div class="grow"><label class="f">Timer (seconds)</label><input type="number" id="fRestS" inputmode="numeric" value="${it.restSec}"></div></div>
+    <div class="switch"><b>Core exercise</b><button class="tg ${it.core?'on':''}" id="fCore" data-act="tgl"></button></div>
+    <label class="f">Baseline / start load</label><input type="text" id="fBase" value="${esc(it.baseline)}">
+    <label class="f">Notes</label><textarea id="fNotes">${esc(it.notes)}</textarea>
+    <div class="row" style="margin-top:12px"><button class="primary grow" data-act="saveItem" data-id="${it.id}" data-new="${isNew?1:0}" data-s="${esc(it.session)}">Save</button><button class="grow" data-act="close">Cancel</button></div>
+    ${isNew?'':`<button class="full" style="margin-top:8px;color:var(--bad)" data-act="delItem" data-id="${it.id}">Remove from plan</button>`}`);
+}
+
+/* ---------- More ---------- */
+function rMore(){
+  const st = S.settings;
+  return `<h1>More</h1>
+  <div class="card"><h3>Intro weeks</h3><div class="switch"><div class="small mute">Drops the last set of every exercise until the end date.</div><button class="tg ${st.introOn?'on':''}" data-act="introTg"></button></div>
+    <label class="f">End date</label><input type="date" id="sIntro" value="${st.introEnd}" data-act-change="introEnd">
+    <div class="small" style="margin-top:6px">${introActive()?'Active now':'Off'} (until ${fmt(st.introEnd)})</div></div>
+  <div class="card"><h3>Tracking start</h3><label class="f">Consistency counts sessions from</label><input type="date" id="sStart" value="${st.startDate}" data-act-change="startDate"><div class="small mute" style="margin-top:4px">${fmt(st.startDate)}</div></div>
+  <div class="card"><h3>Training blocks and deloads</h3>
+    <div class="switch"><div><b>Planned deload</b><div class="small mute">Last week of every block: same weights, half the sets, about 1 RPE easier.</div></div><button class="tg ${st.autoDeload?'on':''}" data-act="autoTg"></button></div>
+    <div class="row"><div class="grow"><label class="f">Block 1 starts (Sat)</label><input type="date" id="sBlock" value="${st.blockStart}"></div>
+    <div style="width:110px"><label class="f">Weeks per block</label><input type="number" id="sLen" inputmode="numeric" value="${st.blockLen}"></div></div>
+    <div class="small mute" style="margin-top:6px">${blockWeek()>0?'Now: block '+blockNo()+', week '+blockWeek():'Block 1 starts '+fmt(st.blockStart)}. Check-ins in week ${st.blockLen-1} and the week after each deload.</div>
+    <div class="row" style="margin-top:8px"><button class="grow" data-act="deload">Check now</button>${st.deloadUntil&&today()<=st.deloadUntil?'<button class="grow" data-act="endDeload">End deload</button>':''}${highRepActive()?'<button class="grow" data-act="endHr">End high-rep</button>':''}</div>
+    ${(st.checkins||[]).length?`<div class="lbl" style="margin-top:10px">Check-ins</div>`+st.checkins.slice(-8).reverse().map(c => `<div class="list-item small"><span>${fmt(c.date)} · block ${c.block} week ${c.week}${c.kind==='post'?' (post-deload)':''}</span><b>${c.yes}/5 yes</b></div>`).join(''):''}</div>
+  <div class="card"><h3>Backup and history</h3>
+    <div class="small mute">${S.workouts.length} sessions · ${S.sets.length} sets stored on this phone. Export a backup regularly.</div>
+    <button class="primary full" style="margin-top:8px" data-act="expJson">Export backup (JSON)</button>
+    <button class="full" style="margin-top:8px" data-act="expCsv">Export sets (CSV)</button>
+    <button class="full" style="margin-top:8px" data-act="pickFile" data-k="json">Restore backup (JSON)</button>
+    <button class="full" style="margin-top:8px" data-act="pickFile" data-k="fitnotes">Import FitNotes CSV</button>
+    <input type="file" id="fileIn" accept=".json,.csv,text/csv,application/json" style="display:none"></div>
+  <div class="card"><h3>Plan</h3><button class="full" data-act="resetPlan">Reset plan to the spreadsheet</button></div>
+  <div class="small mute" style="text-align:center;margin:10px 0">Training · v1.2</div>`;
+}
+
+/* ---------- files ---------- */
+async function saveFile(name, text, type){
+  const blob = new Blob([text],{type});
+  try { const f = new File([blob],name,{type}); if(navigator.canShare && navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:name}); return; } } catch(e){ if(e && e.name==='AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+const stamp = () => today().split('-').reverse().join('-');
+function exportJson(){ saveFile('training-backup-'+stamp()+'.json', JSON.stringify({app:'dene-training',version:1,exported:new Date().toISOString(),settings:S.settings,plan:S.plan,workouts:S.workouts,sets:S.sets,body:S.body},null,1),'application/json'); }
+const csvCell = v => { const s = String(v==null?'':v); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+function exportCsv(){
+  const rows = [['Date','Gym','Session','Exercise','Machine','Set','Weight (kg)','Reps','RPE','Est 1RM (kg)','PR']];
+  [...S.sets].sort((a,b) => a.date<b.date?-1:a.date>b.date?1:a.ts-b.ts).forEach(x => rows.push([fmt(x.date),x.gym,x.session,x.exercise,x.machine,x.idx,x.weight,x.reps,x.rpe==null?'':x.rpe,r1(e1rm(x.weight,x.reps)),(x.pr||[]).join(' ')]));
+  saveFile('training-sets-'+stamp()+'.csv', rows.map(r => r.map(csvCell).join(',')).join('\n'),'text/csv');
+}
+function parseCsv(t){
+  const rows = []; let row = [], cell = '', q = false;
+  for(let i=0;i<t.length;i++){ const c = t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){ cell+='"'; i++; } else q = false; } else cell += c; }
+    else if(c==='"') q = true; else if(c===','){ row.push(cell); cell=''; } else if(c==='\n'||c==='\r'){ if(c==='\r'&&t[i+1]==='\n') i++; row.push(cell); rows.push(row); row=[]; cell=''; } else cell += c; }
+  if(cell!==''||row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim()!==''));
+}
+const norm = s => s.toLowerCase().replace(/\bdb\b/g,'dumbbell').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+function sim(a,b){ const A = new Set(norm(a).split(' ')), B = new Set(norm(b).split(' ')); let i = 0; A.forEach(x => { if(B.has(x)) i++; }); return i/Math.max(1,new Set([...A,...B]).size); }
+let FN = null;
+function fitnotesParse(text){
+  const rows = parseCsv(text.replace(/^﻿/,''));
+  const hd = rows.shift().map(h => h.trim().toLowerCase());
+  const ci = re => hd.findIndex(h => re.test(h));
+  const iD = ci(/^date/), iE = ci(/^exercise/), iKg = ci(/weight.*kg/), iLb = ci(/weight.*lb/), iW = ci(/^weight/), iR = ci(/^reps/), iC = ci(/comment|note/);
+  if(iD<0||iE<0||iR<0) throw new Error('Could not find Date, Exercise and Reps columns');
+  const out = [];
+  rows.forEach(r => {
+    let d = (r[iD]||'').trim(); if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)){ const [a,b,c] = d.split('/'); d = c+'-'+pad(+b)+'-'+pad(+a); }
+    if(!/^\d{4}-\d{2}-\d{2}/.test(d)) return; d = d.slice(0,10);
+    const reps = parseInt(r[iR],10); if(!reps) return;
+    let w = iKg>=0 ? num(r[iKg]) : iLb>=0 ? (num(r[iLb])!=null ? num(r[iLb])*0.453592 : null) : iW>=0 ? num(r[iW]) : null;
+    out.push({date:d, name:(r[iE]||'').trim(), weight:w?Math.round(w*100)/100:0, reps, comment:iC>=0?r[iC]:''});
+  });
+  return out;
+}
+function fitnotesSheet(){
+  const names = [...new Set(FN.rows.map(r => r.name))].sort();
+  const planEx = [...new Set(S.plan.map(p => p.exercise))].sort();
+  FN.map = FN.map || {};
+  names.forEach(n => { if(FN.map[n]!==undefined) return; let best = '', bs = 0; planEx.forEach(p => { const s = norm(p)===norm(n) ? 1 : sim(n,p); if(s>bs){ bs = s; best = p; } }); FN.map[n] = bs>=0.6 ? best : ''; });
+  const dates = FN.rows.map(r => r.date).sort();
+  sheet(`<h2>Import FitNotes</h2><div class="small mute">${FN.rows.length} sets, ${names.length} exercises, ${fmt(dates[0])} to ${fmt(dates[dates.length-1])}.</div>
+    <label class="f">Which gym were these logged at? (loads stay separate per gym)</label>
+    <select id="fnGym">${[...GYMS,'Old gym'].map(g => `<option ${FN.gym===g?'selected':''}>${esc(g)}</option>`).join('')}</select>
+    <label class="f">Match to plan exercises (blank keeps the FitNotes name)</label>
+    ${names.map((n,i) => `<div style="margin:8px 0"><div class="small">${esc(n)}</div><select data-fn="${i}">${['',...planEx].map(p => `<option value="${esc(p)}" ${FN.map[n]===p?'selected':''}>${p?esc(p):'— keep FitNotes name —'}</option>`).join('')}</select></div>`).join('')}
+    <div class="row" style="margin-top:12px"><button class="primary grow" data-act="fnGo">Import</button><button class="grow" data-act="close">Cancel</button></div>`);
+  FN.names = names;
+}
+function fitnotesImport(){
+  const gym = document.getElementById('fnGym').value;
+  document.querySelectorAll('[data-fn]').forEach(s => { FN.map[FN.names[+s.dataset.fn]] = s.value; });
+  const existing = new Set(S.sets.filter(x => x.imported).map(x => [x.date,x.gym,x.exercise,x.weight,x.reps,x.idx].join('|')));
+  const byDate = {}; let added = 0, skipped = 0;
+  FN.rows.forEach((r,i) => {
+    const ex = FN.map[r.name] || r.name;
+    if(!byDate[r.date]){ let w = S.workouts.find(w => w.source==='fitnotes' && w.date===r.date && w.gym===gym);
+      if(!w){ w = {id:uid(),date:r.date,session:'Imported',gym,coreOnly:false,status:'done',mode:'Imported',source:'fitnotes'}; saveWorkout(w); }
+      byDate[r.date] = {w, counts:{}}; }
+    const b = byDate[r.date]; b.counts[ex] = (b.counts[ex]||0)+1;
+    const sig = [r.date,gym,ex,r.weight,r.reps,b.counts[ex]].join('|');
+    if(existing.has(sig)){ skipped++; return; }
+    saveSet({id:uid(),workoutId:b.w.id,date:r.date,gym,session:'Imported',exercise:ex,machine:'',idx:b.counts[ex],weight:r.weight,reps:r.reps,rpe:null,ts:pd(r.date).getTime()+i,pr:[],imported:true,fnName:r.name});
+    added++;
+  });
+  closeSheet(); FN = null; toast(`Imported ${added} sets${skipped?`, skipped ${skipped} duplicates`:''}`); render();
+}
+function restoreJson(text){
+  const d = JSON.parse(text);
+  if(!d || d.app!=='dene-training') throw new Error('Not a Training backup file');
+  clearAll();
+  S.settings = Object.assign(DEFAULTS(), d.settings||{}); S.plan = d.plan||[]; S.workouts = d.workouts||[]; S.sets = d.sets||[]; S.body = d.body||[];
+  saveSettings(); savePlan(); S.workouts.forEach(w => put('workouts',w)); S.sets.forEach(x => put('sets',x)); S.body.forEach(x => put('body',x));
+  toast('Backup restored'); render();
+}
+
+/* ---------- deload ---------- */
+function deloadSheet(kind){
+  V.dl = DELOAD_QS.map(() => null); V.dlKind = kind || 'manual';
+  drawDeload();
+}
+function drawDeload(){
+  const yes = V.dl.filter(x => x===true).length, answered = V.dl.every(x => x!==null), k = V.dlKind;
+  const title = k==='pre' ? 'Week '+blockWeek()+' check-in' : k==='post' ? 'Post-deload check-in' : 'Deload check';
+  let res = '';
+  if(answered){
+    if(yes>=2 && k==='pre') res = `<div class="banner"><b>${yes} yeses.</b> Your deload is next week as planned. Keep this week sensible: hit your targets, don't chase extras.</div><button class="primary full" data-act="dlDone">Save</button>`;
+    else if(yes>=2 && k==='post') res = `<div class="banner red"><b>${yes} yeses straight after a deload.</b> The Pyramid's advice here is that the plan is probably too much: trim weekly volume (about a set from each muscle group) rather than deloading again.</div><button class="primary full" data-act="dlDone">Save</button>`;
+    else if(yes>=2) res = `<div class="banner"><b>${yes} yeses: a deload week is suggested.</b> Same weights, half the sets, about 1 RPE easier, for 7 days. Your next block starts after it.</div><div class="row"><button class="primary grow" data-act="dlStart">Start deload week</button><button class="grow" data-act="dlDone">Not now</button></div>`;
+    else if(yes===1 && V.dl[4]===true) res = `<div class="banner"><b>Only aches and pains.</b> Try a high-rep week: normal sets, 12–20 reps, lighter loads.</div><div class="row"><button class="primary grow" data-act="hrStart">Start high-rep week</button><button class="grow" data-act="dlDone">Not now</button></div>`;
+    else res = `<div class="banner blue">${yes} ${yes===1?'yes':'yeses'}. No deload needed. Keep pushing.</div><button class="primary full" data-act="dlDone">Save</button>`;
+  } else res = `<div class="small mute">Answer all five.</div>`;
+  sheet(`<h2>${title}</h2>` + DELOAD_QS.map((q,i) => `<div style="margin:10px 0"><div>${q}</div><div class="seg" style="margin-top:6px"><button class="${V.dl[i]===true?'on':''}" data-act="dlA" data-i="${i}" data-v="1">Yes</button><button class="${V.dl[i]===false?'on':''}" data-act="dlA" data-i="${i}" data-v="0">No</button></div></div>`).join('') + res);
+}
+function saveCheckin(){ (S.settings.checkins = S.settings.checkins||[]).push({date:today(), kind:V.dlKind, block:blockNo(), week:blockWeek(), yes:V.dl.filter(x=>x).length, answers:V.dl.slice()}); }
+function nextSat(d){ let n = addDays(d,1); while(dow(n)!=='Sat') n = addDays(n,1); return n; }
+
+/* ---------- events ---------- */
+const A = {
+  tab: d => { V.tab = d.k; V.pick = null; window.scrollTo(0,0); render(); },
+  pick: d => { V.pick = d.s; V.tab = 'today'; render(); },
+  gym: d => { S.settings.gym = d.g; saveSettings(); render(); },
+  core: () => { S.settings.coreOnly = !S.settings.coreOnly; saveSettings(); render(); },
+  start: () => { const w = {id:uid(),date:today(),session:V.pick,gym:S.settings.gym,coreOnly:S.settings.coreOnly,status:'active',mode:null,startedAt:Date.now(),source:'app',deload:deloadActive(),highRep:highRepActive(),rx:{}}; saveWorkout(w); V.focus = null; V.entry = {}; V.tab = 'session'; window.scrollTo(0,0); render(); },
+  resume: () => { V.tab = 'session'; render(); },
+  wCore: () => { const w = activeWorkout(); w.coreOnly = !w.coreOnly; saveWorkout(w); render(); },
+  focus: d => { V.focus = d.id; render(); },
+  adj: (d) => { const it = S.plan.find(p => p.id===V.focus); const e = V.entry[it.id]; const f = d.f; let v = num(e[f])||0; v = Math.max(0, v + parseFloat(d.d)); e[f] = f==='r' ? Math.round(v) : Math.round(v*100)/100; render(); },
+  rpe: d => { const e = V.entry[V.focus]; const v = +d.v; e.rpe = e.rpe===v ? null : v; render(); },
+  logRx: d => { const it = S.plan.find(p => p.id===d.id), w = activeWorkout(), r = rxFor(it,w), e = V.entry[d.id]||{}; logSet(it,w,r.weight,r.reps,e.rpe==null?null:e.rpe); },
+  stall: d => stallDecide(S.plan.find(p => p.id===d.id), d.a),
+  logSet: d => { const it = S.plan.find(p => p.id===d.id), e = V.entry[d.id]; logSet(it, activeWorkout(), num(e.w), parseInt(e.r,10), e.rpe); },
+  repeat: d => { const it = S.plan.find(p => p.id===d.id), w = activeWorkout(); const mine = S.sets.filter(x => x.workoutId===w.id && x.exercise===it.exercise).sort((a,b)=>a.ts-b.ts); const l = mine[mine.length-1]; if(l) logSet(it,w,l.weight,l.reps,l.rpe); },
+  delSet: d => { removeSet(d.id); render(); },
+  finish: () => {
+    const w = activeWorkout(); const all = sessionItems(w.session,false), core = all.filter(i => i.core);
+    const did = it => S.sets.some(x => x.workoutId===w.id && x.exercise===it.exercise);
+    const sug = all.every(did) ? 'Full' : core.every(did) ? 'Core only' : null;
+    const n = S.sets.filter(x => x.workoutId===w.id).length;
+    sheet(`<h2>Finish ${esc(w.session)}</h2><div class="small mute">${n} sets logged. ${sug?'Suggested: '+sug:'Not every core exercise was logged.'}</div>
+      <button class="${sug==='Full'?'okb':''} full" style="margin-top:10px" data-act="fin" data-m="Full">Full</button>
+      <button class="${sug==='Core only'?'okb':''} full" style="margin-top:8px" data-act="fin" data-m="Core only">Core only</button>
+      <button class="full" style="margin-top:8px" data-act="close">Keep going</button>`);
+  },
+  fin: d => { const w = activeWorkout(); w.mode = d.m; w.status = 'done'; w.finishedAt = Date.now(); saveWorkout(w); closeSheet(); stopTimer(); V.tab = 'today'; V.pick = null; toast('Session saved: '+d.m); render(); },
+  cancelW: () => sheet(`<h2>Discard this session?</h2><div class="small mute">Deletes the session and its logged sets.</div><div class="row" style="margin-top:12px"><button class="grow" style="color:var(--bad)" data-act="cancelYes">Discard</button><button class="grow" data-act="close">Keep</button></div>`),
+  cancelYes: () => { const w = activeWorkout(); S.sets.filter(x => x.workoutId===w.id).forEach(x => removeSet(x.id)); S.workouts = S.workouts.filter(x => x.id!==w.id); del('workouts',w.id); closeSheet(); stopTimer(); V.tab='today'; render(); },
+  timerAdd: () => { T.end += 30000; T.beeped = false; tick(); },
+  timerStop: () => stopTimer(),
+  cell: d => sheet(`<h2>${esc(d.s)}</h2><div class="small mute">Week of ${fmt(d.w)}</div>` + ['Full','Core only','Missed'].map(m => `<button class="full" style="margin-top:8px" data-act="setCell" data-w="${d.w}" data-s="${esc(d.s)}" data-m="${m}">${m}</button>`).join('') + `<button class="full" style="margin-top:8px" data-act="setCell" data-w="${d.w}" data-s="${esc(d.s)}" data-m="">Automatic (from logged sessions)</button>`),
+  setCell: d => { const k = d.w+'|'+d.s; if(d.m) S.settings.overrides[k] = d.m; else delete S.settings.overrides[k]; saveSettings(); closeSheet(); render(); },
+  planOpen: d => { V.planOpen = V.planOpen===d.s ? null : d.s; render(); },
+  editItem: d => itemForm(S.plan.find(p => p.id===d.id), false),
+  addItem: d => itemForm({id:'p'+uid(),session:d.s,day:SESSIONS.find(s=>s.name===d.s).day,type:'',exercise:'',muscle:'',sets:3,repMin:8,repMax:12,effort:'RPE 8',rest:'90 s',restSec:90,core:false,baseline:'Not logged',notes:''}, true),
+  tgl: (d,el) => el.classList.toggle('on'),
+  saveItem: d => {
+    const g = id => document.getElementById(id).value;
+    const ex = g('fEx').trim(); if(!ex){ toast('Name the exercise'); return; }
+    let it = S.plan.find(p => p.id===d.id);
+    if(!it){ const sess = SESSIONS.find(s => s.name===d.s); const sib = S.plan.filter(p => p.session===d.s);
+      it = {id:d.id,session:d.s,day:sess.day,type:(sib[0]||{}).type||'',order:Math.max(0,...S.plan.map(p=>p.order))+1}; S.plan.push(it); }
+    Object.assign(it,{exercise:ex,muscle:g('fMu').trim(),sets:Math.max(1,parseInt(g('fSets'),10)||1),repMin:parseInt(g('fMin'),10)||1,repMax:parseInt(g('fMax'),10)||1,effort:g('fEff'),rest:g('fRest'),restSec:parseInt(g('fRestS'),10)||90,core:document.getElementById('fCore').classList.contains('on'),baseline:g('fBase'),notes:g('fNotes')});
+    if(it.repMax<it.repMin) it.repMax = it.repMin;
+    savePlan(); closeSheet(); render();
+  },
+  delItem: d => { S.plan = S.plan.filter(p => p.id!==d.id); savePlan(); closeSheet(); render(); },
+  move: d => { const it = S.plan.find(p => p.id===d.id); const items = sessionItems(it.session,false); const i = items.indexOf(it), j = i+(+d.d); if(j<0||j>=items.length) return; const o = items[j].order; items[j].order = it.order; it.order = o; savePlan(); render(); },
+  close: () => closeSheet(),
+  introTg: () => { S.settings.introOn = !S.settings.introOn; saveSettings(); render(); },
+  endDeload: () => { S.settings.deloadUntil = null; saveSettings(); render(); },
+  deload: d => deloadSheet(d.k),
+  dlA: d => { V.dl[+d.i] = d.v==='1'; drawDeload(); },
+  dlStart: () => { saveCheckin(); S.settings.deloadUntil = addDays(today(),6); S.settings.blockStart = nextSat(S.settings.deloadUntil); saveSettings(); closeSheet(); toast('Deload week started. Next block starts '+fmt(S.settings.blockStart)); render(); },
+  hrStart: () => { saveCheckin(); S.settings.highRepUntil = addDays(today(),6); saveSettings(); closeSheet(); render(); },
+  dlDone: () => { saveCheckin(); saveSettings(); closeSheet(); render(); },
+  autoTg: () => { S.settings.autoDeload = !S.settings.autoDeload; saveSettings(); render(); },
+  endHr: () => { S.settings.highRepUntil = null; saveSettings(); render(); },
+  expJson: () => exportJson(),
+  expCsv: () => exportCsv(),
+  pickFile: d => { const f = document.getElementById('fileIn'); f.dataset.k = d.k; f.value = ''; f.click(); },
+  fnGo: () => fitnotesImport(),
+  resetPlan: () => sheet(`<h2>Reset the plan?</h2><div class="small mute">Replaces your edited plan with the original spreadsheet. Logged sets are kept.</div><div class="row" style="margin-top:12px"><button class="grow" style="color:var(--bad)" data-act="resetYes">Reset</button><button class="grow" data-act="close">Cancel</button></div>`),
+  resetYes: () => { S.plan = JSON.parse(JSON.stringify(SEED)); savePlan(); closeSheet(); toast('Plan reset'); render(); },
+};
+document.addEventListener('click', e => { const t = e.target.closest('[data-act]'); if(!t || t.disabled) return; const f = A[t.dataset.act]; if(f){ e.preventDefault(); f(t.dataset,t); } });
+document.addEventListener('input', e => {
+  const t = e.target;
+  if(t.id==='inW'||t.id==='inR'){ const en = V.entry[t.dataset.id]; if(en) en[t.dataset.f] = t.value; }
+});
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if(t.id==='inM'){ const it = S.plan.find(p => p.id===t.dataset.id), w = activeWorkout(); const k = it.exercise.toLowerCase()+'|'+w.gym; const v = t.value.trim(); if(v) S.settings.machines[k] = v; else delete S.settings.machines[k]; saveSettings(); V.entry[it.id] = undefined; render(); }
+  if(t.id==='sIntro' && t.value){ S.settings.introEnd = t.value; saveSettings(); render(); }
+  if(t.id==='sStart' && t.value){ S.settings.startDate = t.value; saveSettings(); render(); }
+  if(t.id==='sBlock' && t.value){ S.settings.blockStart = weekStart(t.value); saveSettings(); render(); }
+  if(t.id==='sLen'){ S.settings.blockLen = Math.max(2,parseInt(t.value,10)||5); saveSettings(); render(); }
+  if(t.id==='fileIn' && t.files[0]){
+    const text = await t.files[0].text();
+    try { if(t.dataset.k==='json') restoreJson(text); else { FN = {rows:fitnotesParse(text), gym:'Old gym'}; if(!FN.rows.length) throw new Error('No sets found in that file'); fitnotesSheet(); } }
+    catch(err){ toast('Import failed: '+err.message); }
+  }
+});
+document.addEventListener('visibilitychange', () => { if(!document.hidden && document.getElementById('timer').classList.contains('show')) tick(); });
+
+load().then(() => { if(activeWorkout()) V.tab = 'session'; render(); });
+if('serviceWorker' in navigator){ try { navigator.serviceWorker.register('sw.js').catch(()=>{}); } catch(e){} }
+</script>
+</body>
+</html>
